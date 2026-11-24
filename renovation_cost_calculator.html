@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Renovation Cost Calculator</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
+    input[type="range"] { accent-color: #2563eb; }
+    @media print {
+      body { background: #fff !important; }
+      .no-print { display: none !important; }
+      aside { position: static !important; }
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen antialiased">
+  <div class="max-w-5xl mx-auto px-4 py-8 sm:py-12">
+    <header class="mb-8 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+      <div class="text-center sm:text-left">
+        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200 mb-3">
+          Instant Estimate Tool
+        </span>
+        <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
+          Home Renovation Cost Calculator
+        </h1>
+        <p class="mt-2 text-sm sm:text-base text-slate-600 max-w-2xl">
+          Configure your space, finish level, and add-ons to get an instant, itemized renovation budget.
+        </p>
+      </div>
+      <div class="no-print flex items-center justify-center sm:justify-end gap-2 bg-white border border-slate-200 rounded-xl p-1.5 shadow-xs self-center sm:self-end">
+        <button type="button" data-currency="USD" class="curr-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 text-white cursor-pointer transition">USD ($)</button>
+        <button type="button" data-currency="CAD" class="curr-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100 cursor-pointer transition">CAD (CA$)</button>
+        <label class="flex items-center gap-1.5 pl-2 pr-2.5 py-1 border-l border-slate-200 text-xs font-medium text-slate-700 cursor-pointer select-none">
+          <input id="taxToggle" type="checkbox" class="w-3.5 h-3.5 rounded text-blue-600" />
+          <span>+13% Tax</span>
+        </label>
+      </div>
+    </header>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      <!-- Left Controls -->
+      <div class="lg:col-span-7 space-y-6">
+        <!-- Area -->
+        <section class="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-sm">
+          <div class="flex items-center justify-between gap-4 mb-4">
+            <div>
+              <h2 class="text-base font-semibold text-slate-900">1. Total Area</h2>
+              <p class="text-xs text-slate-500">Adjust slider or enter square footage</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <input
+                id="areaInput"
+                type="number"
+                min="200"
+                max="5000"
+                step="50"
+                value="950"
+                class="w-24 text-right font-semibold text-slate-900 border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <span class="text-sm font-medium text-slate-500">sq ft</span>
+            </div>
+          </div>
+          <input
+            id="areaRange"
+            type="range"
+            min="200"
+            max="5000"
+            step="50"
+            value="950"
+            class="w-full cursor-pointer"
+          />
+          <div class="flex justify-between text-xs text-slate-400 mt-1.5">
+            <span>200 sq ft</span>
+            <span>2,500 sq ft</span>
+            <span>5,000 sq ft</span>
+          </div>
+        </section>
+
+        <!-- Renovation Tier -->
+        <section class="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-sm">
+          <h2 class="text-base font-semibold text-slate-900 mb-1">2. Renovation Tier</h2>
+          <p class="text-xs text-slate-500 mb-4">Select the scope and material quality</p>
+          <div id="tierGrid" class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <button
+              type="button"
+              data-tier="cosmetic"
+              class="tier-btn text-left p-4 rounded-xl border-2 transition-all cursor-pointer border-slate-200 hover:border-slate-300 bg-white"
+            >
+              <div class="text-sm font-semibold text-slate-900">Cosmetic</div>
+              <div class="text-xs text-blue-600 font-medium mt-0.5">$45 / sq ft</div>
+              <p class="text-xs text-slate-500 mt-2">Paint, flooring refresh, fixtures &amp; lighting</p>
+            </button>
+
+            <button
+              type="button"
+              data-tier="standard"
+              class="tier-btn text-left p-4 rounded-xl border-2 transition-all cursor-pointer border-blue-600 bg-blue-50/50"
+            >
+              <div class="text-sm font-semibold text-slate-900">Standard</div>
+              <div class="text-xs text-blue-600 font-medium mt-0.5">$85 / sq ft</div>
+              <p class="text-xs text-slate-500 mt-2">Full surface remodel, cabinetry &amp; plumbing</p>
+            </button>
+
+            <button
+              type="button"
+              data-tier="luxury"
+              class="tier-btn text-left p-4 rounded-xl border-2 transition-all cursor-pointer border-slate-200 hover:border-slate-300 bg-white"
+            >
+              <div class="text-sm font-semibold text-slate-900">Luxury</div>
+              <div class="text-xs text-blue-600 font-medium mt-0.5">$150 / sq ft</div>
+              <p class="text-xs text-slate-500 mt-2">Custom millwork, stone, smart home &amp; layout</p>
+            </button>
+          </div>
+        </section>
+
+        <!-- Extra Options -->
+        <section class="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-sm">
+          <h2 class="text-base font-semibold text-slate-900 mb-1">3. Extra Options</h2>
+          <p class="text-xs text-slate-500 mb-4">Add specialized rooms or services</p>
+          <div class="space-y-2.5" id="extrasList">
+            <label class="flex items-center justify-between p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition">
+              <div class="flex items-center gap-3">
+                <input type="checkbox" class="extra-cb w-4 h-4 rounded text-blue-600" data-name="Kitchen Remodel" data-cost="14000" checked />
+                <div>
+                  <div class="text-sm font-medium text-slate-900">Kitchen Remodel Package</div>
+                  <div class="text-xs text-slate-500">Custom cabinets, quartz counters, backsplash</div>
+                </div>
+              </div>
+              <span class="text-sm font-semibold text-slate-700">+$14,000</span>
+            </label>
+
+            <label class="flex items-center justify-between p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition">
+              <div class="flex items-center gap-3">
+                <input type="checkbox" class="extra-cb w-4 h-4 rounded text-blue-600" data-name="Bathroom Upgrade" data-cost="8500" />
+                <div>
+                  <div class="text-sm font-medium text-slate-900">Full Bathroom Upgrade</div>
+                  <div class="text-xs text-slate-500">Walk-in tile shower, vanity &amp; waterproofing</div>
+                </div>
+              </div>
+              <span class="text-sm font-semibold text-slate-700">+$8,500</span>
+            </label>
+
+            <label class="flex items-center justify-between p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition">
+              <div class="flex items-center gap-3">
+                <input type="checkbox" class="extra-cb w-4 h-4 rounded text-blue-600" data-name="3D Design &amp; Permits" data-cost="3200" />
+                <div>
+                  <div class="text-sm font-medium text-slate-900">3D Interior Design &amp; Permits</div>
+                  <div class="text-xs text-slate-500">Architectural drawings &amp; city permit filing</div>
+                </div>
+              </div>
+              <span class="text-sm font-semibold text-slate-700">+$3,200</span>
+            </label>
+
+            <label class="flex items-center justify-between p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition">
+              <div class="flex items-center gap-3">
+                <input type="checkbox" class="extra-cb w-4 h-4 rounded text-blue-600" data-name="Smart Home Wiring" data-cost="2800" />
+                <div>
+                  <div class="text-sm font-medium text-slate-900">Smart Lighting &amp; Climate</div>
+                  <div class="text-xs text-slate-500">Smart switches, thermostat &amp; recessed LEDs</div>
+                </div>
+              </div>
+              <span class="text-sm font-semibold text-slate-700">+$2,800</span>
+            </label>
+          </div>
+        </section>
+      </div>
+
+      <!-- Right Summary -->
+      <aside class="lg:col-span-5 lg:sticky lg:top-6">
+        <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+          <h2 class="text-base font-semibold text-slate-900 mb-4">Estimated Budget</h2>
+
+          <div class="bg-slate-50 rounded-xl p-4 border border-slate-200/80 mb-5">
+            <div class="text-xs font-medium uppercase tracking-wider text-slate-500">Total Estimate</div>
+            <div id="totalPrice" class="text-3xl sm:text-4xl font-bold text-slate-900 mt-1">$94,750</div>
+            <div id="priceRange" class="text-xs text-slate-500 mt-1">Estimated range: $88,118 – $104,225</div>
+          </div>
+
+          <div class="space-y-3 text-sm border-b border-slate-200 pb-4 mb-4">
+            <div class="flex justify-between text-slate-600">
+              <span id="baseLabel">Standard (950 sq ft × $85)</span>
+              <span id="baseCost" class="font-medium text-slate-900">$80,750</span>
+            </div>
+            <div id="extrasSummary" class="space-y-2"></div>
+            <div class="flex justify-between text-slate-600 pt-1">
+              <span>Contingency Buffer (10%)</span>
+              <span id="contingencyCost" class="font-medium text-slate-900">$9,475</span>
+            </div>
+            <div id="taxRow" class="hidden flex justify-between text-slate-600">
+              <span>Estimated Tax (13%)</span>
+              <span id="taxCost" class="font-medium text-slate-900">$0</span>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between text-xs text-slate-500 mb-5">
+            <span>Estimated Timeline</span>
+            <span id="timelineEst" class="font-semibold text-slate-700">6 – 8 weeks</span>
+          </div>
+
+          <button
+            id="openQuoteBtn"
+            type="button"
+            class="no-print w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-xl transition shadow-sm cursor-pointer"
+          >
+            Request Detailed Quote
+          </button>
+          <div class="no-print grid grid-cols-2 gap-2.5 mt-2.5">
+            <button
+              id="printBtn"
+              type="button"
+              class="bg-slate-900 hover:bg-slate-800 text-white font-medium py-2 px-3 rounded-xl text-xs sm:text-sm transition cursor-pointer"
+            >
+              Print / Save PDF
+            </button>
+            <button
+              id="copyBtn"
+              type="button"
+              class="bg-white hover:bg-slate-50 text-slate-700 font-medium py-2 px-3 rounded-xl border border-slate-200 text-xs sm:text-sm transition cursor-pointer"
+            >
+              Copy Summary
+            </button>
+          </div>
+          <button
+            id="resetBtn"
+            type="button"
+            class="no-print w-full mt-2.5 bg-white hover:bg-slate-50 text-slate-600 font-medium py-2 px-4 rounded-xl border border-slate-200 text-sm transition cursor-pointer"
+          >
+            Reset Calculator
+          </button>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- Quote Modal -->
+  <div id="quoteModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-200">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-bold text-slate-900">Request Detailed Quote</h3>
+        <button id="closeModalBtn" type="button" class="text-slate-400 hover:text-slate-600 text-xl leading-none cursor-pointer">&times;</button>
+      </div>
+
+      <div id="modalFormWrap">
+        <div class="bg-blue-50 border border-blue-100 rounded-xl p-3 mb-4 text-xs text-blue-900">
+          Summary: <span id="modalSummaryText" class="font-semibold"></span>
+        </div>
+        <form id="quoteForm" class="space-y-3">
+          <div>
+            <label class="block text-xs font-medium text-slate-700 mb-1">Full Name</label>
+            <input id="clientName" type="text" required placeholder="Alex Morgan" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-700 mb-1">Email Address</label>
+            <input id="clientEmail" type="email" required placeholder="alex@example.com" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-700 mb-1">Project Notes (Optional)</label>
+            <textarea id="clientNotes" rows="3" placeholder="Target start date, special requests..." class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+          </div>
+          <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-4 rounded-xl transition cursor-pointer">
+            Send Request
+          </button>
+        </form>
+      </div>
+
+      <div id="modalSuccessWrap" class="hidden text-center py-4">
+        <div class="w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto mb-3 text-xl font-bold">&#10003;</div>
+        <h4 class="text-base font-bold text-slate-900">Quote Request Received</h4>
+        <p class="text-sm text-slate-600 mt-1" id="successDetail"></p>
+        <button id="doneModalBtn" type="button" class="mt-5 w-full bg-slate-900 hover:bg-slate-800 text-white font-medium py-2.5 px-4 rounded-xl text-sm transition cursor-pointer">
+          Back to Calculator
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const TIERS = {
+      cosmetic: { label: 'Cosmetic', rate: 45, weeksBase: 2 },
+      standard: { label: 'Standard', rate: 85, weeksBase: 5 },
+      luxury: { label: 'Luxury', rate: 150, weeksBase: 9 }
+    };
+
+    const CURRENCIES = {
+      USD: { symbol: '$', rate: 1.0 },
+      CAD: { symbol: 'CA$', rate: 1.38 }
+    };
+
+    const state = {
+      area: 950,
+      tier: 'standard',
+      currency: 'USD',
+      includeTax: false
+    };
+
+    const areaInput = document.getElementById('areaInput');
+    const areaRange = document.getElementById('areaRange');
+    const tierBtns = document.querySelectorAll('.tier-btn');
+    const extraCbs = document.querySelectorAll('.extra-cb');
+    const totalPriceEl = document.getElementById('totalPrice');
+    const priceRangeEl = document.getElementById('priceRange');
+    const baseLabelEl = document.getElementById('baseLabel');
+    const baseCostEl = document.getElementById('baseCost');
+    const extrasSummaryEl = document.getElementById('extrasSummary');
+    const contingencyCostEl = document.getElementById('contingencyCost');
+    const timelineEstEl = document.getElementById('timelineEst');
+
+    const quoteModal = document.getElementById('quoteModal');
+    const openQuoteBtn = document.getElementById('openQuoteBtn');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    const doneModalBtn = document.getElementById('doneModalBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const quoteForm = document.getElementById('quoteForm');
+    const modalFormWrap = document.getElementById('modalFormWrap');
+    const modalSuccessWrap = document.getElementById('modalSuccessWrap');
+    const modalSummaryText = document.getElementById('modalSummaryText');
+    const successDetail = document.getElementById('successDetail');
+
+    const currBtns = document.querySelectorAll('.curr-btn');
+    const taxToggle = document.getElementById('taxToggle');
+    const taxRow = document.getElementById('taxRow');
+    const taxCostEl = document.getElementById('taxCost');
+    const printBtn = document.getElementById('printBtn');
+    const copyBtn = document.getElementById('copyBtn');
+    let lastSummaryPlain = '';
+
+    function fmt(num) {
+      const c = CURRENCIES[state.currency];
+      return c.symbol + Math.round(num * c.rate).toLocaleString('en-US');
+    }
+
+    function updateUI() {
+      const tierObj = TIERS[state.tier];
+      const baseCost = state.area * tierObj.rate;
+
+      let extrasTotal = 0;
+      let extrasCount = 0;
+      const selectedNames = [];
+      extrasSummaryEl.innerHTML = '';
+
+      extraCbs.forEach((cb) => {
+        if (cb.checked) {
+          const cost = Number(cb.dataset.cost);
+          extrasTotal += cost;
+          extrasCount += 1;
+          selectedNames.push(`${cb.dataset.name}: ${fmt(cost)}`);
+          const row = document.createElement('div');
+          row.className = 'flex justify-between text-slate-600';
+          row.innerHTML = `<span>${cb.dataset.name}</span><span class="font-medium text-slate-900">${fmt(cost)}</span>`;
+          extrasSummaryEl.appendChild(row);
+        }
+      });
+
+      const subtotal = baseCost + extrasTotal;
+      const contingency = subtotal * 0.10;
+      const preTaxTotal = subtotal + contingency;
+      const taxAmount = state.includeTax ? preTaxTotal * 0.13 : 0;
+      const total = preTaxTotal + taxAmount;
+      const lowRange = total * 0.93;
+      const highRange = total * 1.10;
+
+      baseLabelEl.textContent = `${tierObj.label} (${state.area.toLocaleString('en-US')} sq ft × ${fmt(tierObj.rate)})`;
+      baseCostEl.textContent = fmt(baseCost);
+      contingencyCostEl.textContent = fmt(contingency);
+
+      if (state.includeTax) {
+        taxRow.classList.remove('hidden');
+        taxCostEl.textContent = fmt(taxAmount);
+      } else {
+        taxRow.classList.add('hidden');
+      }
+
+      totalPriceEl.textContent = fmt(total);
+      priceRangeEl.textContent = `Estimated range: ${fmt(lowRange)} – ${fmt(highRange)}`;
+
+      const minWeeks = tierObj.weeksBase + Math.floor(state.area / 800) + Math.floor(extrasCount / 2);
+      const maxWeeks = minWeeks + 2;
+      timelineEstEl.textContent = `${minWeeks} – ${maxWeeks} weeks`;
+
+      modalSummaryText.textContent = `${state.area.toLocaleString('en-US')} sq ft, ${tierObj.label} tier (${state.currency}) — ${fmt(total)}`;
+      lastSummaryPlain = [
+        `Renovation Estimate (${state.currency})`,
+        `Area: ${state.area.toLocaleString('en-US')} sq ft | Tier: ${tierObj.label}`,
+        `Base: ${fmt(baseCost)}`,
+        ...(selectedNames.length ? selectedNames : ['Extras: None']),
+        `Contingency (10%): ${fmt(contingency)}`,
+        ...(state.includeTax ? [`Tax (13%): ${fmt(taxAmount)}`] : []),
+        `Total Estimate: ${fmt(total)} (${minWeeks}-${maxWeeks} weeks)`
+      ].join('\n');
+    }
+
+    function setArea(val) {
+      const clamped = Math.max(200, Math.min(5000, Number(val) || 200));
+      state.area = clamped;
+      areaInput.value = clamped;
+      areaRange.value = clamped;
+      updateUI();
+    }
+
+    areaRange.addEventListener('input', (e) => setArea(e.target.value));
+    areaInput.addEventListener('input', (e) => setArea(e.target.value));
+
+    tierBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        state.tier = btn.dataset.tier;
+        tierBtns.forEach((b) => {
+          b.classList.remove('border-blue-600', 'bg-blue-50/50');
+          b.classList.add('border-slate-200', 'bg-white');
+        });
+        btn.classList.remove('border-slate-200', 'bg-white');
+        btn.classList.add('border-blue-600', 'bg-blue-50/50');
+        updateUI();
+      });
+    });
+
+    extraCbs.forEach((cb) => cb.addEventListener('change', updateUI));
+
+    currBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        state.currency = btn.dataset.currency;
+        currBtns.forEach((b) => {
+          const active = b.dataset.currency === state.currency;
+          b.classList.toggle('bg-slate-900', active);
+          b.classList.toggle('text-white', active);
+          b.classList.toggle('text-slate-600', !active);
+          b.classList.toggle('hover:bg-slate-100', !active);
+        });
+        updateUI();
+      });
+    });
+
+    taxToggle.addEventListener('change', (e) => {
+      state.includeTax = e.target.checked;
+      updateUI();
+    });
+
+    printBtn.addEventListener('click', () => window.print());
+
+    copyBtn.addEventListener('click', () => {
+      const done = () => {
+        copyBtn.textContent = 'Copied!';
+        setTimeout(() => { copyBtn.textContent = 'Copy Summary'; }, 1600);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(lastSummaryPlain).then(done).catch(() => {
+          const ta = document.createElement('textarea');
+          ta.value = lastSummaryPlain;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+          done();
+        });
+      } else {
+        const ta = document.createElement('textarea');
+        ta.value = lastSummaryPlain;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        done();
+      }
+    });
+
+    resetBtn.addEventListener('click', () => {
+      state.area = 950;
+      state.tier = 'standard';
+      state.currency = 'USD';
+      state.includeTax = false;
+      taxToggle.checked = false;
+      currBtns.forEach((b) => {
+        const active = b.dataset.currency === 'USD';
+        b.classList.toggle('bg-slate-900', active);
+        b.classList.toggle('text-white', active);
+        b.classList.toggle('text-slate-600', !active);
+        b.classList.toggle('hover:bg-slate-100', !active);
+      });
+      areaInput.value = 950;
+      areaRange.value = 950;
+      tierBtns.forEach((b) => {
+        const active = b.dataset.tier === 'standard';
+        b.classList.toggle('border-blue-600', active);
+        b.classList.toggle('bg-blue-50/50', active);
+        b.classList.toggle('border-slate-200', !active);
+        b.classList.toggle('bg-white', !active);
+      });
+      extraCbs.forEach((cb, idx) => {
+        cb.checked = idx === 0;
+      });
+      updateUI();
+    });
+
+    function openModal() {
+      modalFormWrap.classList.remove('hidden');
+      modalSuccessWrap.classList.add('hidden');
+      quoteModal.classList.remove('hidden');
+      quoteModal.classList.add('flex');
+    }
+
+    function closeModal() {
+      quoteModal.classList.add('hidden');
+      quoteModal.classList.remove('flex');
+    }
+
+    openQuoteBtn.addEventListener('click', openModal);
+    closeModalBtn.addEventListener('click', closeModal);
+    doneModalBtn.addEventListener('click', closeModal);
+    quoteModal.addEventListener('click', (e) => {
+      if (e.target === quoteModal) closeModal();
+    });
+
+    quoteForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('clientName').value.trim();
+      const email = document.getElementById('clientEmail').value.trim();
+      successDetail.textContent = `Thanks, ${name}! Your estimate summary has been prepared for ${email}.`;
+      modalFormWrap.classList.add('hidden');
+      modalSuccessWrap.classList.remove('hidden');
+      quoteForm.reset();
+    });
+
+    updateUI();
+  </script>
+</body>
+</html>
